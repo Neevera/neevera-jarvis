@@ -6,6 +6,7 @@
 -. "close (Nama Aplikasi" -> Menutup Aplikasi
 -. "close apps" -> Menutup semua jendela (Sapu Jagat)
 -. "minimize chrome / minimize google chrome" -> Menutup browser dalam keadaan menyimpan tab sebelumnya
+-. "minimize WhatsApp" -> minimize WhatsApp "-"
 -. "search on (Nama Aplikasi)" -> Mencari sesuatu di Youtube/TikTok/Google
 -. "help" -> Menampilkan commands yang tersedia
 -. "exit / stop" -> Mematikan Neevera
@@ -20,3 +21,8 @@
 == > Idle mode (Mode tidur)
 -. "Go to sleep / Standby" -> Mode tidur (Tidak akan menerima perintah apapun)
 -. "Wake up" -> Membangunkan progam
+
+== > System
+-. "Turn on WIFI / Turn off WIFI" -> Menyalakan dan mematikan WIFI
+-. "Hotspot" -> Masuk ke menu hotspot
+-. "Screenshot / capture screen" -> Screenshot layar

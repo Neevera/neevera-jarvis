@@ -8,6 +8,8 @@ import sounddevice as sd
 import json
 from vosk import Model, KaldiRecognizer
 import speech_recognition as sr
+import pyautogui
+import datetime
 
 # SUARA PYGAME
 
@@ -37,6 +39,7 @@ rec = KaldiRecognizer(model, 16000, '''
     "open youtube",
     "open settings",
     "open whats app",
+    "open instagram",
     "open music",
     "open youtube music",
     "open file manager",
@@ -68,7 +71,12 @@ rec = KaldiRecognizer(model, 16000, '''
     "who built you",
     "who is your bos",
     "who created you",
-    "who made you"
+    "who made you",
+    "turn on wifi",
+    "hotspot",
+    "turn off wifi",
+    "screenshot",
+    "capture screen"
 ]
 ''')
 
@@ -184,8 +192,16 @@ while True:
         os.startfile(alamat_aplikasi)
         
     elif "open google" in perintah:
-        play_recording("Opening Google .", "voice/Opening Google.mp3")
+        play_recording("Opening Google.", "voice/Opening Google.mp3")
         webbrowser.open("https://www.google.com/?hl=ID")
+        
+    elif "open tik tok" in perintah or "open tiktok" in perintah:
+        play_recording("Opening TikTok.", "voice/Opening TikTok.mp3")
+        webbrowser.open("https://www.tiktok.com/foryou")
+        
+    elif "open instagram" in perintah:
+        play_recording("Opening Instagram.", "voice/Opening Instagram.mp3")
+        webbrowser.open("https://www.instagram.com/")
         
     
     # PERINTAH TUTUP APLIKASI
@@ -234,6 +250,7 @@ while True:
         else:
             # Kalau chrome udah ketutup
             play_recording("Google Chrome is already closed, Neev.", "voice/Google Chrome is already closed.mp3")
+            
     elif "close chrome" in perintah or "close google chrome" in perintah:
         daftar_aplikasi = os.popen('tasklist').read().lower()
         
@@ -246,6 +263,17 @@ while True:
             
         else:
             play_recording("Google Chrome is already closed.", "voice/Google Chrome is already closed.mp3")
+    
+    elif "minimize whatsapp" in perintah or "minimize whats app" in perintah:
+        cek_wa = os.popen('tasklist /fi "WINDOWTITLE eq WhatsApp*"').read().lower()
+        if "no tasks" not in cek_wa:
+            play_recording("Okay, closing WhatsApp.", "voice/Okay, closing WhatsApp.mp3")
+            
+            # Mantra Remote Control buat mencet tombol Minimize (-)
+            mantra_minimize_wa = 'powershell -command "$w = Add-Type -Name W -PassThru -MemberDefinition \'[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr h, int c);\'; Get-Process | Where-Object {$_.MainWindowTitle -match \'WhatsApp\' -and $_.MainWindowHandle -ne 0} | ForEach-Object { $w::ShowWindowAsync($_.MainWindowHandle, 2) }"'
+            os.system(mantra_minimize_wa)
+        else:
+            play_recording("WhatsApp is not open right now, Neev.", "voice/Sorry, WhatsApp is already closed.mp3")
     
     elif "close file manager" in perintah or "close explorer" in perintah:
         # Panggil radar PowerShell buat ngitung ada berapa jendela folder yang lagi kebuka
@@ -284,6 +312,27 @@ while True:
         print("Keyword:", keyword)
         play_recording("Alright, searching now.", "voice/Alright_Searching_Now.mp3")
         webbrowser.open("https://www.google.com/search?q=" + keyword)
+    
+    
+    # PERINTAH WI-FI 
+    
+    elif "turn on wifi" in perintah:
+        play_recording("Turning on Wi-Fi.", "voice/Turning on Wi-Fi.mp3")
+        # Jurus CMD buat nyalain Wi-Fi
+        os.system('netsh interface set interface "Wi-Fi" admin=enabled')
+        
+    elif "turn off wifi" in perintah:
+        play_recording("Turning off Wi-Fi.", "voice/Turning off Wi-Fi.mp3")
+        # Jurus CMD buat matiin Wi-Fi
+        os.system('netsh interface set interface "Wi-Fi" admin=disabled')
+
+    
+    # PERINTAH HOTSPOT
+    
+    elif "hotspot" in perintah or "open hotspot" in perintah:
+        play_recording("Opening Mobile Hotspot settings.", "voice/Opening Mobile Hotspot settings.mp3")
+        # Buka halaman pengaturan Hotspot
+        os.system("start ms-settings:network-mobilehotspot")
 
     
     # TUTUP SEMUA APPS
@@ -334,7 +383,7 @@ while True:
     # PERTANYAAN PROGRAM BISA NGAPAIN AJA
     
     elif "what can you do" in perintah:
-        play_recording("I can do many things, Neev! For example, I can open various apps, search for keywords on platforms on browser, close specific apps, and even close all active windows at once to clean up your workspace. Just say 'Help' to see the commands", "voice/I can do many things Neev! For example, I can open various apps, search for keywords on platforms on browser, close specific apps, and even close all active windows at once to clean up your workspace. Just say 'Help'.mp3")
+        play_recording("I am equipped to handle everything from application management to core system controls and web browsing, I'm constantly learning new things, Just say 'Help', and I will show you exactly what I can do for you today", "voice/I am equipped to handle everything from application management to core system controls and web browsing, I'm constantly learning new things, Just say 'Help', and I will show you exactly what I can do for you today.mp3")
         
     
     # HELP
@@ -362,6 +411,23 @@ while True:
     elif "search on" in perintah:
         play_recording("Sorry, I cannot search on that platform yet because it's not registered in my system.", "voice/Sorry, I can't open that yet because the application is not registered in my system.mp3")
         
+    
+    # PERINTAH SCREENSHOT 
+    
+    elif "screenshot" in perintah or "capture screen" in perintah or "capture" in perintah:
+        play_recording("Taking a screenshot.", "voice/Taking a screenshot.mp3")
+        #Wajib pakai huruf 'r' di depan tanda kutip
+        alamat_folder = r"C:\Users\LENOVO\Downloads"
+        
+        # 2. Bikin nama filenya dari jam dan tanggal
+        waktu_sekarang = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        nama_file = f"screenshot_{waktu_sekarang}.png"
+        alamat_lengkap = os.path.join(alamat_folder, nama_file)
+        foto = pyautogui.screenshot()
+        foto.save(alamat_lengkap)
+        
+        play_recording("Screenshot saved successfully.", "voice/Screenshot saved successfully.mp3")
+        print(f"[System: Screenshot berhasil disimpan di {alamat_lengkap}]")
     
     # DEFAULT
     
