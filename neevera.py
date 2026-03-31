@@ -10,10 +10,19 @@ from vosk import Model, KaldiRecognizer
 import speech_recognition as sr
 import pyautogui
 import datetime
+import psutil
 
 # SUARA PYGAME
 
 pygame.mixer.init()
+
+# SETUP TEXT-TO-SPEECH (ANTI-MOGOK)
+
+def ngomong_langsung(teks):
+    print("Assistant: " + teks)
+    # Kita pinjam pita suara bawaan Windows lewat PowerShell, dijamin nggak macet!
+    mantra_ngomong = f'powershell -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak(\'{teks}\')"'
+    os.system(mantra_ngomong)
 
 # SETUP VOSK (TELINGA BARU)
 
@@ -76,6 +85,9 @@ rec = KaldiRecognizer(model, 16000, '''
     "hotspot",
     "turn off wifi",
     "screenshot",
+    "check battery",
+    "battery status",
+    "what time is it",
     "capture screen"
 ]
 ''')
@@ -428,6 +440,27 @@ while True:
         
         play_recording("Screenshot saved successfully.", "voice/Screenshot saved successfully.mp3")
         print(f"[System: Screenshot berhasil disimpan di {alamat_lengkap}]")
+        
+    
+    # PERINTAH CEK BATERAI
+    
+    elif "battery" in perintah or "check battery" in perintah or "battery status" in perintah:
+        baterai = psutil.sensors_battery()
+        persen = baterai.percent
+        ngecas = baterai.power_plugged # Bernilai True kalau charger dipasang
+        
+        if ngecas:
+            ngomong_langsung(f"This is the co-assistant of Neevera. Your battery is at {persen} percent and currently charging, Neev.")
+        elif persen < 20:
+            ngomong_langsung(f"This is the co-assistant of Neevera. Warning Neev! Your battery is only at {persen} percent. Please plug in the charger immediately.")
+        else:
+            ngomong_langsung(f"This is the co-assistant of Neevera. Your battery is at {persen} percent.")
+  
+    # PERINTAH CEK JAM
+    
+    elif "what time is it" in perintah or "check time" in perintah :
+        jam_sekarang = datetime.datetime.now().strftime("%I:%M %p")
+        ngomong_langsung(f"This is the co-assistant of Neevera. It is currently {jam_sekarang}, Neev.")
     
     # DEFAULT
     

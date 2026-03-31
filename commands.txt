@@ -26,3 +26,5 @@
 -. "Turn on WIFI / Turn off WIFI" -> Menyalakan dan mematikan WIFI
 -. "Hotspot" -> Masuk ke menu hotspot
 -. "Screenshot / capture screen" -> Screenshot layar
+-. "Battery / check battery / battery status" -> Info baterai
+-. "What time is it / check time" -> Info waktu
