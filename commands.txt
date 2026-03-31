@@ -1,0 +1,22 @@
+====================================
+   DAFTAR PERINTAH NEEVERA
+====================================
+== > Agent
+-. "open (Nama Aplikasi)" -> Membuka Aplikasi
+-. "close (Nama Aplikasi" -> Menutup Aplikasi
+-. "close apps" -> Menutup semua jendela (Sapu Jagat)
+-. "minimize chrome / minimize google chrome" -> Menutup browser dalam keadaan menyimpan tab sebelumnya
+-. "search on (Nama Aplikasi)" -> Mencari sesuatu di Youtube/TikTok/Google
+-. "help" -> Menampilkan commands yang tersedia
+-. "exit / stop" -> Mematikan Neevera
+
+== > Identity
+-. "who are you / hello, who are you"
+-. "hey / hello / neevera / hey neevera" / hello neevera"
+-. "what can you do" -> Menampilkan kemampuan AI
+-. "who made you / who created you / who is your bos / who built you" -> Memperkenalkan pencipta dari Neevera
+-. "How are you / are you good"
+
+== > Idle mode (Mode tidur)
+-. "Go to sleep / Standby" -> Mode tidur (Tidak akan menerima perintah apapun)
+-. "Wake up" -> Membangunkan progam
