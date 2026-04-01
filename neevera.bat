@@ -1,5 +1,5 @@
 @echo off
-title Neevera AI Startup
+title Neevera Assistant
 
 :: 1. Cek apakah sudah punya akses Admin (Jenderal)
 net session >nul 2>&1

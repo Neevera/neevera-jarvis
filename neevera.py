@@ -20,13 +20,14 @@ pygame.mixer.init()
 
 def ngomong_langsung(teks):
     print("Assistant: " + teks)
-    # Kita pinjam pita suara bawaan Windows lewat PowerShell, dijamin nggak macet!
     mantra_ngomong = f'powershell -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak(\'{teks}\')"'
     os.system(mantra_ngomong)
 
 # SETUP VOSK (TELINGA BARU)
 
 q = queue.Queue()
+
+# GOOGLE SPEECH RECOGNIZER
 telinga = sr.Recognizer()
 
 def callback(indata, frames, time, status):
