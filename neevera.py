@@ -11,6 +11,7 @@ import speech_recognition as sr
 import pyautogui
 import datetime
 import psutil
+from pycaw.pycaw import AudioUtilities
 
 # SUARA PYGAME
 
@@ -89,7 +90,10 @@ rec = KaldiRecognizer(model, 16000, '''
     "check battery",
     "battery status",
     "what time is it",
-    "capture screen"
+    "capture screen",
+    "system wake up",
+    "kill chrome",
+    "kill google chrome"
 ]
 ''')
 
@@ -120,20 +124,38 @@ def dengar_vosk():
                 hasil = json.loads(rec.Result())
                 return hasil.get("text", "")
 
-# FUNCTION TO PLAY CUSTOM MP3 RECORDINGS
+# FUNGSI MUTE APLIKASI LAIN
+
+def atur_suara_lain(bisu):
+    # Ambil daftar semua aplikasi yang lagi ngeluarin suara di Windows
+    sessions = AudioUtilities.GetAllSessions()
+    for session in sessions:
+        try:
+            volume = session.SimpleAudioVolume
+            # Kalo aplikasi yang bunyi itu bukan program kodingan kita (python.exe)
+            if session.Process and session.Process.name() != "python.exe":
+                if bisu == True:
+                    volume.SetMute(1, None) 
+                else:
+                    volume.SetMute(0, None) 
+        except:
+            pass
+
+# FUNGSI BUAT CUSTOM MP3 RECORDING
 
 def play_recording(screen_text, mp3_file_name):
     print("Assistant: " + screen_text)
     
     try:
-        
+        atur_suara_lain(bisu=True)
         pygame.mixer.music.load(mp3_file_name)
         pygame.mixer.music.set_volume(1.0) 
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy():
             pygame.time.Clock().tick(10)
-            
+        atur_suara_lain(bisu=False)
     except:
+        atur_suara_lain(bisu=False)
         print("[System Error: Oops, the file " + mp3_file_name + " is missing!]")
 
 # STARTUP VOICE
@@ -171,7 +193,7 @@ while True:
     
     # PERINTAH MASUK MODE IDLE
     
-    elif "go to sleep" in perintah or "standby" in perintah:
+    elif "go to sleep" in perintah or "standby" in perintah or "sleep" in perintah:
         idle_mode = True 
         play_recording("Alright, I'm going to sleep. Just say wake up if you need me.", "voice/Alright, I'm going to sleep, Just say wake up if you need me.mp3")
         continue
@@ -252,16 +274,12 @@ while True:
         else:
             play_recording("Sorry, youtube music is not open right now.", "voice/Sorry, youtube music is not open right now.mp3")
             
-    elif "minimize chrome" in perintah or "minimize google chrome" in perintah:
-        # Minta absen daftar aplikasi dulu, jadiin huruf kecil semua
+    elif "kill chrome" in perintah or "kill google chrome" in perintah:
         daftar_aplikasi = os.popen('tasklist').read().lower()
-        
-        # Misal chrome beneran ada di daftar
         if "chrome.exe" in daftar_aplikasi:
             play_recording("Alright, minimizing Google Chrome.", "voice/Alright, minimizing Google Chrome.mp3") 
             os.system("taskkill /im chrome.exe /f")
         else:
-            # Kalau chrome udah ketutup
             play_recording("Google Chrome is already closed, Neev.", "voice/Google Chrome is already closed.mp3")
             
     elif "close chrome" in perintah or "close google chrome" in perintah:
@@ -270,7 +288,7 @@ while True:
         if "chrome.exe" in daftar_aplikasi:
             play_recording("Alright, closing Google Chrome gracefully.", "voice/Alright, closing Google Chrome gracefully.mp3") 
             
-            # Mantra PowerShell buat ngeklik 'X' secara halus
+            # Spell PowerShell buat ngeklik 'X' secara halus
             mantra_sopan_chrome = 'powershell -command "Get-Process chrome | Where-Object {$_.MainWindowHandle -ne 0} | ForEach-Object { $_.CloseMainWindow() }"'
             os.system(mantra_sopan_chrome)
             
@@ -282,23 +300,23 @@ while True:
         if "no tasks" not in cek_wa:
             play_recording("Okay, closing WhatsApp.", "voice/Okay, closing WhatsApp.mp3")
             
-            # Mantra Remote Control buat mencet tombol Minimize (-)
+            # Spell Remote Control buat mencet tombol minimize (-)
             mantra_minimize_wa = 'powershell -command "$w = Add-Type -Name W -PassThru -MemberDefinition \'[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr h, int c);\'; Get-Process | Where-Object {$_.MainWindowTitle -match \'WhatsApp\' -and $_.MainWindowHandle -ne 0} | ForEach-Object { $w::ShowWindowAsync($_.MainWindowHandle, 2) }"'
             os.system(mantra_minimize_wa)
         else:
             play_recording("WhatsApp is not open right now, Neev.", "voice/Sorry, WhatsApp is already closed.mp3")
     
     elif "close file manager" in perintah or "close explorer" in perintah:
-        # Panggil radar PowerShell buat ngitung ada berapa jendela folder yang lagi kebuka
+        # Panggil radar powershell buat ngitung ada berapa jendela folder yang lagi kebuka
         jumlah_folder = os.popen('powershell -command "@((New-Object -comObject Shell.Application).Windows()).Count"').read().strip()
         
-        # Kalau jumlahnya bukan 0 beraryi ada folder yang lagi buka
+        # Kalo jumlahnya bukan 0 beraryi ada folder yang lagi buka
         if jumlah_folder != "0" and jumlah_folder != "":
             play_recording("Closing File Manager.", "voice/Closing File Manager.mp3")
             mantra_tutup_folder = 'powershell -command "(New-Object -comObject Shell.Application).Windows() | foreach-object {$_.quit()}"'
             os.system(mantra_tutup_folder)
         else:
-            # Kalau jendelanya 0 (udah ketutup semua)
+            # Kalo jendelanya 0 (udah ketutup semua)
             play_recording("File Manager is already closed.", "voice/File Manager is already closed.mp3")
         
             
@@ -327,16 +345,16 @@ while True:
         webbrowser.open("https://www.google.com/search?q=" + keyword)
     
     
-    # PERINTAH WI-FI 
+    # PERINTAH WIFI 
     
     elif "turn on wifi" in perintah:
         play_recording("Turning on Wi-Fi.", "voice/Turning on Wi-Fi.mp3")
-        # Jurus CMD buat nyalain Wi-Fi
+        # CMD buat nyalain WiFi
         os.system('netsh interface set interface "Wi-Fi" admin=enabled')
         
     elif "turn off wifi" in perintah:
         play_recording("Turning off Wi-Fi.", "voice/Turning off Wi-Fi.mp3")
-        # Jurus CMD buat matiin Wi-Fi
+        # CMD buat matiin WiFi
         os.system('netsh interface set interface "Wi-Fi" admin=disabled')
 
     
@@ -352,7 +370,8 @@ while True:
     
     elif "close apps" in perintah:
         play_recording("Alright Neev, cleaning up your workspace.", "voice/Alright Neev, cleaning up your workspace.mp3")
-        mantra_sapu_jagat = "powershell -command \"Get-Process | Where-Object {$_.MainWindowHandle -ne 0 -and $_.ProcessName -notmatch 'explorer|Code|cmd|WindowsTerminal|powershell|python|Taskmgr'} | Stop-Process -Force -ErrorAction SilentlyContinue\""
+        os.system("taskkill /im chrome.exe >nul 2>&1")
+        mantra_sapu_jagat = "powershell -command \"Get-Process | Where-Object {$_.MainWindowHandle -ne 0 -and $_.ProcessName -notmatch 'explorer|Code|cmd|WindowsTerminal|powershell|python|Taskmgr|chrome'} | Stop-Process -Force -ErrorAction SilentlyContinue\""
         os.system(mantra_sapu_jagat)
         play_recording("Workspace cleared! All done.", "voice/Workspace_cleared!_All_done.mp3")
 
@@ -429,10 +448,10 @@ while True:
     
     elif "screenshot" in perintah or "capture screen" in perintah or "capture" in perintah:
         play_recording("Taking a screenshot.", "voice/Taking a screenshot.mp3")
-        #Wajib pakai huruf 'r' di depan tanda kutip
+        # Wajib pakai huruf 'r' di depan tanda kutip
         alamat_folder = r"C:\Users\LENOVO\Downloads"
         
-        # 2. Bikin nama filenya dari jam dan tanggal
+        # Bikin nama filenya dari jam dan tanggal
         waktu_sekarang = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         nama_file = f"screenshot_{waktu_sekarang}.png"
         alamat_lengkap = os.path.join(alamat_folder, nama_file)
@@ -461,7 +480,7 @@ while True:
     
     elif "what time is it" in perintah or "check time" in perintah :
         jam_sekarang = datetime.datetime.now().strftime("%I:%M %p")
-        ngomong_langsung(f"This is the co-assistant of Neevera. It is currently {jam_sekarang}, Neev.")
+        ngomong_langsung(f"This is the co-assistant of Neevera. It is currently {jam_sekarang}")
     
     # DEFAULT
     

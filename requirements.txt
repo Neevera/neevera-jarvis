@@ -12,6 +12,7 @@ playsound==1.2.2
 psutil==7.2.2
 PyAudio==0.2.14
 PyAutoGUI==0.9.54
+pycaw==20251023
 pycparser==3.0
 pygame==2.6.1
 PyGetWindow==0.0.9
