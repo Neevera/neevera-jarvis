@@ -28,3 +28,5 @@
 -. "Screenshot / capture screen" -> Screenshot layar
 -. "Battery / check battery / battery status" -> Info baterai
 -. "What time is it / check time" -> Info waktu
+-. "Lock my computer / lock screen" -> Mengunci layar PC/Laptop
+-. "Shut down the computer / turn off the computer" -> Mematikan PC/Laptop (dilengkapi dengan konfirmasi keamanan)

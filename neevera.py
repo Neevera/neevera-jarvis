@@ -41,6 +41,10 @@ rec = KaldiRecognizer(model, 16000, '''
     "alright",
     "aight",
     "so",
+    "yes",
+    "no",
+    "sure",
+    "cancel",
     "are you good",
     "how are you",
     "go to sleep",
@@ -93,7 +97,15 @@ rec = KaldiRecognizer(model, 16000, '''
     "capture screen",
     "system wake up",
     "kill chrome",
-    "kill google chrome"
+    "kill google chrome",
+    "lock my computer",
+    "lock screen",
+    "shut down the computer",
+    "turn off the computer",
+    "yes turn off the computer",
+    "sure turn off the computer",
+    "yes shutdown the computer",
+    "sure shutdown the computer"
 ]
 ''')
 
@@ -167,6 +179,7 @@ print("\n[System: Voice assistant is starting, say 'Help' to see the commands]")
 # PROGRAM UTAMA
 
 idle_mode = False
+konfirmasi_shutdown = False
 while True:
     try:
         teks = dengar_vosk()
@@ -184,12 +197,33 @@ while True:
     
     if idle_mode == True:
         if "wake up" in perintah:
-            idle_mode = False # 
-            play_recording("I'm awake and ready for commands.", "voice/I'm awake and ready for commands.mp3")
+            idle_mode = False 
+            
+            # Neevera ngecek buat matiin laptop bukan 
+            if konfirmasi_shutdown == True:
+                play_recording("I am awake. Are you sure you want to shut down the computer?\n[System: say 'Yes turn off the computer' or 'No/Cancel']\n", "voice/I am awake. Are you sure you want to shut down the computer.mp3")
+                jawaban = dengar_vosk().lower()
+                print("You answered:", jawaban)
+                
+                if "yes turn off the computer" in jawaban or "sure turn off the computer" in jawaban or "yes shutdown the computer" in jawaban or "sure shutdown the computer" in jawaban:
+                    play_recording("Shutting down the computer. Goodbye!", "voice/Shutting down the computer. Goodbye.mp3")
+                    os.system("shutdown /s /t 5") 
+                    break 
+                    
+                elif "no" in jawaban or "cancel" in jawaban:
+                    # Kalo batal, matiin saklar bahayanya
+                    konfirmasi_shutdown = False 
+                    play_recording("Shutdown canceled. I am still here and ready for commands.", "voice/Shutdown canceled. I am still here and ready for commands.mp3")
+                
+                else:
+                    play_recording("I didn't catch a clear 'Yes' or 'No', canceling the shutdown.", "voice/I didn't catch a clear 'Yes' or 'No', canceling the shutdown.mp3")
+            
+            else:
+                # Kalo dibangunin biasa
+                play_recording("I'm awake and ready for commands.", "voice/I'm awake and ready for commands.mp3")
         else:
             pass
-        continue 
-        
+        continue
     
     # PERINTAH MASUK MODE IDLE
     
@@ -438,10 +472,10 @@ while True:
         play_recording("Sorry, I can't open that yet because the application is not registered in my system.", "voice/Sorry, I can't open that yet because the application is not registered in my system.mp3")
         
     elif "close" in perintah:
-        play_recording("Sorry, I can't close that yet because the application is not registered in my system.", "voice/Sorry, I can't open that yet because the application is not registered in my system.mp3")
+        play_recording("Sorry, I can't close that yet because the application is not registered in my system.", "voice/Sorry, I can't close that yet because the application is not registered in my system.mp3")
         
     elif "search on" in perintah:
-        play_recording("Sorry, I cannot search on that platform yet because it's not registered in my system.", "voice/Sorry, I can't open that yet because the application is not registered in my system.mp3")
+        play_recording("Sorry, I can't search on that platform yet because it's not registered in my system.", "voice/Sorry, I can't open that yet because the application is not registered in my system.mp3")
         
     
     # PERINTAH SCREENSHOT 
@@ -481,6 +515,38 @@ while True:
     elif "what time is it" in perintah or "check time" in perintah :
         jam_sekarang = datetime.datetime.now().strftime("%I:%M %p")
         ngomong_langsung(f"This is the co-assistant of Neevera. It is currently {jam_sekarang}")
+
+    # PERINTAH LOCK SCREEN (DENGAN KONFIRMASI)
+    
+    elif "lock my computer" in perintah or "lock screen" in perintah:
+        # Nanya dulu buat mastiin
+        play_recording("Are you sure you want to lock the computer?\n[System: say 'Yes lock my computer' or 'No/Cancel']\n", "voice/Are you sure you want to lock the computer.mp3")
+        
+        # Buka telinga sebentar buat nungguin jawaban
+        jawaban = dengar_vosk().lower()
+        print("You answered:", jawaban)
+        
+        # Kalo dijawab Yes
+        if "yes lock my computer" in jawaban or "sure" in jawaban:
+            play_recording("Locking your computer now.", "voice/Locking your computer now.mp3")
+            # Eksekusi kunci layar
+            os.system("rundll32.exe user32.dll,LockWorkStation")
+            
+        # Kalo berubah pikiran (No)
+        elif "no" in jawaban or "cancel" in jawaban:
+            play_recording("Lock screen canceled, I am still here.", "voice/Lock screen canceled, I am still here.mp3")
+            
+        # Jaga-jaga kalo suaranya ga jelas
+        else:
+            play_recording("I didn't catch a clear 'Yes' or 'No', canceling the lock screen.", "voice/I didn't catch a clear yes or no, canceling the lock screen.mp3")
+
+    # PERINTAH SHUTDOWN (MASUK STANDBY DULU)
+    
+    elif "shutdown the computer" in perintah or "turn off the computer" in perintah:
+        konfirmasi_shutdown = True # Nyalain saklar bahaya
+        idle_mode = True # Langsung ke mode idle
+        play_recording("Are you sure? I am entering standby mode to prevent accidental shutdown. Wake me up first to confirm.", "voice/Are you sure I am entering standby mode to prevent accidental shutdown. Wake me up first to confirm.mp3")
+        continue # Langsung lempar ke atas biar masuk mode idle
     
     # DEFAULT
     
