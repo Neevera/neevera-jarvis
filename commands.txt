@@ -10,6 +10,14 @@
 -. "search on (Nama Aplikasi)" -> Mencari sesuatu di Youtube/TikTok/Google
 -. "help" -> Menampilkan commands yang tersedia
 -. "exit / stop" -> Mematikan Neevera
+-. "Turn on WIFI / Turn off WIFI" -> Menyalakan dan mematikan WIFI
+-. "Hotspot" -> Masuk ke menu hotspot
+-. "Screenshot / capture screen" -> Screenshot layar
+-. "Battery / check battery / battery status" -> Info baterai
+-. "What time is it / check time" -> Info waktu
+-. "What day is it / what day is today" -> Info hari ini
+-. "Lock my computer / lock screen" -> Mengunci layar PC/Laptop
+-. "Shut down the computer / turn off the computer" -> Mematikan PC/Laptop (dilengkapi dengan konfirmasi keamanan)
 
 == > Identity
 -. "who are you / hello, who are you"
@@ -19,14 +27,5 @@
 -. "How are you / are you good"
 
 == > Idle mode (Mode tidur)
--. "Go to sleep / Standby" -> Mode tidur (Tidak akan menerima perintah apapun)
+-. "Go to sleep / Standby / standby" -> Mode tidur (Tidak akan menerima perintah apapun)
 -. "Wake up" -> Membangunkan progam
-
-== > System
--. "Turn on WIFI / Turn off WIFI" -> Menyalakan dan mematikan WIFI
--. "Hotspot" -> Masuk ke menu hotspot
--. "Screenshot / capture screen" -> Screenshot layar
--. "Battery / check battery / battery status" -> Info baterai
--. "What time is it / check time" -> Info waktu
--. "Lock my computer / lock screen" -> Mengunci layar PC/Laptop
--. "Shut down the computer / turn off the computer" -> Mematikan PC/Laptop (dilengkapi dengan konfirmasi keamanan)

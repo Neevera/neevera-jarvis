@@ -105,7 +105,9 @@ rec = KaldiRecognizer(model, 16000, '''
     "yes turn off the computer",
     "sure turn off the computer",
     "yes shutdown the computer",
-    "sure shutdown the computer"
+    "sure shutdown the computer",
+    "what day is it",
+    "what day is today"
 ]
 ''')
 
@@ -504,7 +506,7 @@ while True:
         ngecas = baterai.power_plugged # Bernilai True kalau charger dipasang
         
         if ngecas:
-            ngomong_langsung(f"This is the co-assistant of Neevera. Your battery is at {persen} percent and currently charging, Neev.")
+            ngomong_langsung(f"This is the co-assistant of Neevera. Your battery is at {persen} percent and currently charging")
         elif persen < 20:
             ngomong_langsung(f"This is the co-assistant of Neevera. Warning Neev! Your battery is only at {persen} percent. Please plug in the charger immediately.")
         else:
@@ -515,6 +517,12 @@ while True:
     elif "what time is it" in perintah or "check time" in perintah :
         jam_sekarang = datetime.datetime.now().strftime("%I:%M %p")
         ngomong_langsung(f"This is the co-assistant of Neevera. It is currently {jam_sekarang}")
+
+    # PERINTAH CEK HARI INI
+    
+    elif "what day is it" in perintah or "what day is today" in perintah:
+        hari_ini = datetime.datetime.now().strftime("%A")
+        ngomong_langsung(f"This is the co-assistant of Neevera. Today is {hari_ini}")
 
     # PERINTAH LOCK SCREEN (DENGAN KONFIRMASI)
     
