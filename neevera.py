@@ -12,6 +12,7 @@ import pyautogui
 import datetime
 import psutil
 from pycaw.pycaw import AudioUtilities
+import ctypes
 
 # SUARA PYGAME
 
@@ -69,6 +70,12 @@ rec = KaldiRecognizer(model, 16000, '''
     "search on youtube",
     "search on tiktok",
     "search on tik tok",
+    "hide yourself",
+    "minimize yourself",
+    "minimize apps",
+    "minimize everything",
+    "show yourself",
+    "come back",
     "close apps",
     "who are you",
     "hello",
@@ -254,7 +261,7 @@ while True:
         os.system("start explorer")
         
     elif "open chrome" in perintah:
-        play_recording("Opening Google Chrome.", "voice/Opening chrome.mp3")
+        play_recording("Opening Chrome.", "voice/Opening chrome.mp3")
         os.system("start chrome")
         
     elif "open music" in perintah or "open youtube music" in perintah:
@@ -313,7 +320,7 @@ while True:
     elif "kill chrome" in perintah or "kill google chrome" in perintah:
         daftar_aplikasi = os.popen('tasklist').read().lower()
         if "chrome.exe" in daftar_aplikasi:
-            play_recording("Alright, minimizing Google Chrome.", "voice/Alright, minimizing Google Chrome.mp3") 
+            play_recording("Alright, killing Google Chrome.", "voice/Alright, killing Google Chrome.mp3") 
             os.system("taskkill /im chrome.exe /f")
         else:
             play_recording("Google Chrome is already closed, Neev.", "voice/Google Chrome is already closed.mp3")
@@ -331,17 +338,6 @@ while True:
         else:
             play_recording("Google Chrome is already closed.", "voice/Google Chrome is already closed.mp3")
     
-    elif "minimize whatsapp" in perintah or "minimize whats app" in perintah:
-        cek_wa = os.popen('tasklist /fi "WINDOWTITLE eq WhatsApp*"').read().lower()
-        if "no tasks" not in cek_wa:
-            play_recording("Okay, closing WhatsApp.", "voice/Okay, closing WhatsApp.mp3")
-            
-            # Spell Remote Control buat mencet tombol minimize (-)
-            mantra_minimize_wa = 'powershell -command "$w = Add-Type -Name W -PassThru -MemberDefinition \'[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr h, int c);\'; Get-Process | Where-Object {$_.MainWindowTitle -match \'WhatsApp\' -and $_.MainWindowHandle -ne 0} | ForEach-Object { $w::ShowWindowAsync($_.MainWindowHandle, 2) }"'
-            os.system(mantra_minimize_wa)
-        else:
-            play_recording("WhatsApp is not open right now, Neev.", "voice/Sorry, WhatsApp is already closed.mp3")
-    
     elif "close file manager" in perintah or "close explorer" in perintah:
         # Panggil radar powershell buat ngitung ada berapa jendela folder yang lagi kebuka
         jumlah_folder = os.popen('powershell -command "@((New-Object -comObject Shell.Application).Windows()).Count"').read().strip()
@@ -354,8 +350,52 @@ while True:
         else:
             # Kalo jendelanya 0 (udah ketutup semua)
             play_recording("File Manager is already closed.", "voice/File Manager is already closed.mp3")
+
+    # PERINTAH MINIMIZE 
+    
+    elif "minimize chrome" in perintah or "minimize google chrome" in perintah:
+        daftar_aplikasi = os.popen('tasklist').read().lower()
         
+        if "chrome.exe" in daftar_aplikasi:
+            play_recording("Alright, minimizing Google Chrome.", "voice/Alright, minimizing Google Chrome.mp3")
+            mantra_minimize_chrome = 'powershell -command "$w = Add-Type -Name W -PassThru -MemberDefinition \'[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr h, int c);\'; Get-Process | Where-Object {$_.ProcessName -match \'chrome\' -and $_.MainWindowHandle -ne 0} | ForEach-Object { $w::ShowWindowAsync($_.MainWindowHandle, 2) }"'
+            os.system(mantra_minimize_chrome)
             
+        else:
+            play_recording("Google Chrome is not open right now, Neev.", "voice/Google Chrome is not open right now.mp3")
+
+    elif "minimize whatsapp" in perintah or "minimize whats app" in perintah:
+        cek_wa = os.popen('tasklist /fi "WINDOWTITLE eq WhatsApp*"').read().lower()
+        if "no tasks" not in cek_wa:
+            play_recording("Okay, closing WhatsApp.", "voice/Okay, closing WhatsApp.mp3")
+            
+            # Spell Remote Control buat mencet tombol minimize (-)
+            mantra_minimize_wa = 'powershell -command "$w = Add-Type -Name W -PassThru -MemberDefinition \'[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr h, int c);\'; Get-Process | Where-Object {$_.MainWindowTitle -match \'WhatsApp\' -and $_.MainWindowHandle -ne 0} | ForEach-Object { $w::ShowWindowAsync($_.MainWindowHandle, 2) }"'
+            os.system(mantra_minimize_wa)
+        else:
+            play_recording("WhatsApp is not open right now, Neev.", "voice/Sorry, WhatsApp is already closed.mp3")
+        
+    # PERINTAH NEEVERA SELF 
+    
+    elif "hide yourself" in perintah or "minimize yourself" in perintah:
+        play_recording("Alright, hiding myself in the background.", "voice/Alright, hiding myself in the background.mp3")
+        
+        # Python ngambil jendela terminalnya sendiri, trs angka '6' artinya "Minimize"
+        ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 6)
+    
+    # PERINTAH SHOW NEEVERA (MUNCULKAN DIRI SENDIRI)
+    
+    elif "show yourself" in perintah or "come back" in perintah:
+        play_recording("Alright, I am back on your screen.", "voice/Alright, I am back on your screen.mp3")
+        
+        # Angka '9' di sini sandi Windows buat restore (kembalikan jendela seperti semula)
+        ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 9)
+
+    # PERINTAH MINIMIZE SEMUA APLIKASI
+    
+    elif "minimize apps" in perintah or "minimize everything" in perintah:
+        play_recording("Alright, minimizing all applications.", "voice/Alright, minimizing all applications.mp3")
+        os.system('powershell -command "(New-Object -ComObject Shell.Application).MinimizeAll()"')
     
     # PERINTAH MENCARI DI INTERNET
     

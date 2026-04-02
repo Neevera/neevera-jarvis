@@ -7,25 +7,29 @@
 -. "close apps" -> Menutup semua jendela (Sapu Jagat)
 -. "kill chrome / kill google chrome" -> Menutup browser dalam keadaan menyimpan tab sebelumnya
 -. "minimize WhatsApp" -> minimize WhatsApp "-"
+-. "minimize Chrome" -> minimize Chrome "-"
 -. "search on (Nama Aplikasi)" -> Mencari sesuatu di Youtube/TikTok/Google
 -. "help" -> Menampilkan commands yang tersedia
 -. "exit / stop" -> Mematikan Neevera
--. "Turn on WIFI / Turn off WIFI" -> Menyalakan dan mematikan WIFI
--. "Hotspot" -> Masuk ke menu hotspot
--. "Screenshot / capture screen" -> Screenshot layar
--. "Battery / check battery / battery status" -> Info baterai
--. "What time is it / check time" -> Info waktu
--. "What day is it / what day is today" -> Info hari ini
--. "Lock my computer / lock screen" -> Mengunci layar PC/Laptop
--. "Shut down the computer / turn off the computer" -> Mematikan PC/Laptop (dilengkapi dengan konfirmasi keamanan)
+-. "turn on WIFI / Turn off WIFI" -> Menyalakan dan mematikan WIFI
+-. "hotspot" -> Masuk ke menu hotspot
+-. "screenshot / capture screen" -> Screenshot layar
+-. "battery / check battery / battery status" -> Info baterai
+-. "what time is it / check time" -> Info waktu
+-. "what day is it / what day is today" -> Info hari ini
+-. "lock my computer / lock screen" -> Mengunci layar PC/Laptop
+-. "shut down the computer / turn off the computer" -> Mematikan PC/Laptop (dilengkapi dengan konfirmasi keamanan)
+-. "hide yourself / minimize yourself" -> Menyembunyikan neevera dari layar
+-. "show yourself / come back" -> Memanggil neevera ke layer
+-. "minimize apps / minimize everything" -> Minimize seluruh aplikasi yang sedang dibuka
 
 == > Identity
 -. "who are you / hello, who are you"
 -. "hey / hello / neevera / hey neevera" / hello neevera"
--. "what can you do" -> Menampilkan kemampuan AI
+-. "what can you do" -> Menjelaskan kemampuan PA
 -. "who made you / who created you / who is your bos / who built you" -> Memperkenalkan pencipta dari Neevera
--. "How are you / are you good"
+-. "how are you / are you good"
 
 == > Idle mode (Mode tidur)
--. "Go to sleep / Standby / standby" -> Mode tidur (Tidak akan menerima perintah apapun)
--. "Wake up" -> Membangunkan progam
+-. "go to sleep / Standby / standby" -> Mode tidur (Tidak akan menerima perintah apapun)
+-. "wake up" -> Membangunkan progam
