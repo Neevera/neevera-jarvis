@@ -7,3 +7,5 @@ pygame
 sounddevice
 SpeechRecognition
 vosk
+pyttsx3
+ollama

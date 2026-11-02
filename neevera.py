@@ -13,17 +13,35 @@ import datetime
 import psutil
 from pycaw.pycaw import AudioUtilities
 import ctypes
+import pyttsx3
+import ollama
+import re
 
-# SUARA PYGAME
+engine = pyttsx3.init()
+engine.setProperty('rate', 165)
+engine.setProperty('volume', 1.0)
 
-pygame.mixer.init()
-
-# SETUP TEXT-TO-SPEECH (ANTI-MOGOK)
-
-def ngomong_langsung(teks):
-    print("Assistant: " + teks)
-    mantra_ngomong = f'powershell -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak(\'{teks}\')"'
-    os.system(mantra_ngomong)
+def tanya_llm(user_input):
+    print("\n[Red Neevera is Thinking...]")
+    try:
+        response = ollama.chat(
+            model='llama3.2:3b',
+            messages=[
+                {
+                    'role': 'system',
+                    'content': 'Your name is Red Neevera (or simply Red). You are an AI created by Neev (Hanif). If the user EXPLICITLY asks you to perform a system action (like opening an app, search, Wi-Fi, battery, time), output ONLY a tag like: [CMD: open whatsapp], [CMD: close chrome], [CMD: search on youtube], [CMD: search on google], [CMD: check battery]. For search, DO NOT guess the keyword, just use [CMD: search on youtube]. Do NOT output any [CMD] tags during casual questions or chats! Refuse shutdown/lock politely. Keep verbal answers under 2 sentences.'
+                },
+                {
+                    'role': 'user',
+                    'content': user_input
+                }
+            ]
+        )
+        jawaban = response['message']['content']
+        return jawaban
+    except Exception as e:
+        print(f"[LLM Error: {e}]")
+        return "Sorry, I am having trouble connecting to my local brain right now."
 
 # SETUP VOSK (TELINGA BARU)
 
@@ -36,114 +54,78 @@ def callback(indata, frames, time, status):
     q.put(bytes(indata))
 
 model = Model("model")  
-rec = KaldiRecognizer(model, 16000, '''
-[   
-    "okay",
-    "alright",
-    "aight",
-    "so",
-    "yes",
-    "no",
-    "sure",
-    "cancel",
-    "are you good",
-    "how are you",
-    "go to sleep",
-    "open",
-    "minimize",
-    "open whatsapp",
-    "open youtube",
-    "open settings",
-    "open whats app",
-    "open instagram",
-    "open music",
-    "open youtube music",
-    "open file manager",
-    "explorer",
-    "close",
-    "close whatsapp",
-    "close settings",
-    "close file manager",
-    "close chrome",
-    "close google chrome",
-    "search on",
-    "search on youtube",
-    "search on tiktok",
-    "search on tik tok",
-    "hide yourself",
-    "minimize yourself",
-    "minimize apps",
-    "minimize everything",
-    "show yourself",
-    "come back",
-    "close apps",
-    "who are you",
-    "hello",
-    "help",
-    "exit",
-    "stop",
-    "hey neevera",
-    "neevera",
-    "neev era",
-    "neev",
-    "era",
-    "what can you do",
-    "standby",
-    "wake up",
-    "who built you",
-    "who is your bos",
-    "who created you",
-    "who made you",
-    "turn on wifi",
-    "hotspot",
-    "turn off wifi",
-    "screenshot",
-    "check battery",
-    "battery status",
-    "what time is it",
-    "capture screen",
-    "system wake up",
-    "kill chrome",
-    "kill google chrome",
-    "lock my computer",
-    "lock screen",
-    "shut down the computer",
-    "turn off the computer",
-    "yes turn off the computer",
-    "sure turn off the computer",
-    "yes shutdown the computer",
-    "sure shutdown the computer",
-    "what day is it",
-    "what day is today"
-]
-''')
 
-def dengar_google():
-    with sr.Microphone() as sumber:
-        print("Listening keyword (Online mode)...")
-        telinga.pause_threshold = 1.5 
-        telinga.adjust_for_ambient_noise(sumber, duration=0.5)
-        
-        try:
-            audio = telinga.listen(sumber, timeout=8)
-            teks = telinga.recognize_google(audio, language="id-ID")
-            return teks
-        except sr.WaitTimeoutError:
-            print("[System: Neev has been quiet for too long, search cancelled]")
-            return ""
-        except:
-            print("[System: Voice is unclear or there is an internet connection issue]")
-            return ""
+# KAMUS GRAMMAR KHUSUS MODE NEEVERA (Cepat & Akurat Sesuai Kata Kunci Bawaan)
+grammar_list = [   
+    "okay", "alright", "aight", "so", "yes", "no", "sure", "cancel",
+    "are you good", "how are you", "go to sleep", "open", "minimize",
+    "open whatsapp", "open youtube", "open settings", "open whats app", "open instagram",
+    "open music", "open youtube music", "open file manager", "explorer", "close",
+    "close whatsapp", "close settings", "close file manager", "close chrome", "close google chrome",
+    "search on", "search on youtube", "search on tiktok", "search on tik tok",
+    "hide yourself", "minimize yourself", "minimize apps", "minimize everything",
+    "show yourself", "come back", "close apps", "who are you", "hello", "help", "exit", "stop",
+    "hey neevera", "neevera", "neev era", "neev", "era", "what can you do", "standby", "wake up",
+    "who built you", "who is your bos", "who created you", "who made you",
+    "turn on wifi", "hotspot", "turn off wifi", "screenshot", "check battery", "battery status",
+    "what time is it", "capture screen", "system wake up", "kill chrome", "kill google chrome",
+    "lock my computer", "lock screen", "shut down the computer", "turn off the computer",
+    "yes turn off the computer", "sure turn off the computer", "yes shutdown the computer",
+    "sure shutdown the computer", "what day is it", "what day is today",
+    "red", "read", "rat", "rad", "rect", "llm", "jarvis", "switch to red", "switch to rat", "activate red", "red neevera",
+    "blue", "switch to blue", "activate blue", "blue neevera",
+    "neev", "hanif", "creator", "boss", "who created you", "who made you", "who built you", "who is your boss", "who is your creator",
+    "online mode", "offline mode", "switch to online", "switch to offline", "use google voice", "use offline voice"
+]
+
+rec_grammar = KaldiRecognizer(model, 16000, json.dumps(grammar_list))
+rec_free = KaldiRecognizer(model, 16000) # Tanpa pembatasan kamus untuk LLM
 
 def dengar_vosk():
-    with sd.RawInputStream(samplerate=16000, blocksize=8000,
+    with q.mutex:
+        q.queue.clear()
+    
+    # Pilih recognizer sesuai mode aktif
+    active_rec = rec_grammar if active_mode == "neevera" else rec_free
+    
+    # Mode Red (LLM) butuh jeda hening lebih panjang (misal ~1 detik) agar user bisa berfikir/berbicara kalimat panjang
+    # Mode Blue (Rule-based) tetap cepat responsif (~0.4 detik) untuk perintah singkat
+    ambang_hening = 4 if active_mode == "neevera" else 9
+        
+    with sd.RawInputStream(samplerate=16000, blocksize=1500,
                            dtype='int16', channels=1, callback=callback):
         print("\nListening...")
+        last_partial = ""
+        silence_count = 0
+        
         while True:
             data = q.get()
-            if rec.AcceptWaveform(data):
-                hasil = json.loads(rec.Result())
-                return hasil.get("text", "")
+            if active_rec.AcceptWaveform(data):
+                hasil = json.loads(active_rec.Result())
+                teks_hasil = hasil.get("text", "").strip()
+                if teks_hasil != "":
+                    return teks_hasil
+            else:
+                partial_json = json.loads(active_rec.PartialResult())
+                partial_text = partial_json.get("partial", "").strip()
+                
+                if partial_text != "":
+                    if partial_text == last_partial:
+                        silence_count += 1
+                        if silence_count >= ambang_hening:
+                            res = json.loads(active_rec.FinalResult())
+                            final_text = res.get("text", "").strip()
+                            teks_final = final_text if final_text != "" else partial_text
+                            
+                            # Abaikan suara desis/kebisingan mikrofon (noise) seperti kata tunggal "the", "a", "uh"
+                            if teks_final.lower() in ["the", "a", "an", "uh", "um", "huh", "the the"]:
+                                silence_count = 0
+                                last_partial = ""
+                                continue
+                            return teks_final
+                    else:
+                        last_partial = partial_text
+                        silence_count = 0
 
 # FUNGSI MUTE APLIKASI LAIN
 
@@ -162,22 +144,59 @@ def atur_suara_lain(bisu):
         except:
             pass
 
-# FUNGSI BUAT CUSTOM MP3 RECORDING
+# LISTENING ENGINE MODE UNTUK RED NEEVERA: "offline" (Vosk) atau "online" (Google SpeechRecognition)
+stt_mode = "offline"
+
+def dengar_google():
+    with sr.Microphone() as sumber:
+        print("\nListening (Online Mode)...")
+        telinga.pause_threshold = 1.0
+        telinga.adjust_for_ambient_noise(sumber, duration=0.3)
+        try:
+            audio = telinga.listen(sumber, timeout=10)
+            teks = telinga.recognize_google(audio, language="en-US")
+            return teks
+        except sr.WaitTimeoutError:
+            return ""
+        except Exception:
+            return ""
+
+def ngomong_langsung(teks):
+    print("Assistant: " + teks)
+    try:
+        atur_suara_lain(bisu=True)
+        # Windows SAPI / System.Speech (Offline & Sangat Cepat)
+        teks_safe = teks.replace("'", "").replace('"', '').replace("\n", " ")
+        mantra = f'powershell -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak(\'{teks_safe}\')"'
+        os.system(mantra)
+        atur_suara_lain(bisu=False)
+    except Exception as e:
+        atur_suara_lain(bisu=False)
+        print(f"[System TTS Error: {e}]")
+
+# SUARA PYGAME
+try:
+    pygame.mixer.init()
+except Exception as e:
+    print(f"[Pygame Mixer Init Warning: {e}]")
 
 def play_recording(screen_text, mp3_file_name):
     print("Assistant: " + screen_text)
     
     try:
         atur_suara_lain(bisu=True)
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
         pygame.mixer.music.load(mp3_file_name)
         pygame.mixer.music.set_volume(1.0) 
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy():
             pygame.time.Clock().tick(10)
         atur_suara_lain(bisu=False)
-    except:
+    except Exception as e:
         atur_suara_lain(bisu=False)
-        print("[System Error: Oops, the file " + mp3_file_name + " is missing!]")
+        # Jika file mp3 gagal diputar, gunakan TTS sebagai fallback!
+        ngomong_langsung(screen_text)
 
 # STARTUP VOICE
 
@@ -189,10 +208,19 @@ print("\n[System: Voice assistant is starting, say 'Help' to see the commands]")
 
 idle_mode = False
 konfirmasi_shutdown = False
+active_mode = "neevera" # Pilihan mode: "neevera" (Rule-Based Only) atau "red" (LLM Only)
+
+print("\n[System Ready: Default mode is 'Blue Neevera'. Say 'Red' to switch to Red Neevera Mode!]")
+
 while True:
     try:
-        teks = dengar_vosk()
-        perintah = teks.lower()
+        # Pada mode Red, gunakan engine pendengar sesuai stt_mode (online: Google SR, offline: Vosk)
+        if active_mode == "red" and stt_mode == "online":
+            teks = dengar_google()
+        else:
+            teks = dengar_vosk()
+            
+        perintah = teks.lower().strip()
         print("You said:", perintah)
 
         if perintah == "":
@@ -201,6 +229,68 @@ while True:
     except:
         print("Error listening...")
         continue
+
+    # SWITCH MODE CONTROL (Pengecekan kata kunci fleksibel dengan kemiripan fonetik)
+    kata_switch_red = ["red", "read", "rat", "rad", "rect", "llm", "jarvis", "switch to red", "switch to rat", "activate red", "red neevera"]
+    kata_switch_blue = ["blue", "neevera", "never", "rule", "rule based", "switch to blue", "switch to neevera", "activate blue", "blue neevera"]
+
+    if any(k in perintah for k in kata_switch_red) and active_mode != "red":
+        active_mode = "red"
+        ngomong_langsung("Red Neevera mode activated. How can I help you?")
+        continue
+    elif any(k in perintah for k in kata_switch_blue) and active_mode != "neevera":
+        active_mode = "neevera"
+        ngomong_langsung("Switched back to Blue Neevera.")
+        continue
+    
+    # JIKA MODE 'RED' AKTIF -> HANYA PROSES DENGAN LLM (TANPA RULE-BASED)
+    if active_mode == "red":
+        if "go to sleep" in perintah or "standby" in perintah or "sleep" in perintah:
+            idle_mode = True
+            play_recording("Alright, I'm going to sleep.", "voice/Alright, I'm going to sleep, Just say wake up if you need me.mp3")
+            continue
+        elif "exit" in perintah or "stop" in perintah:
+            ngomong_langsung("Goodbye Neev! Deactivating Red Neevera.")
+            break # Keluar langsung dari program/terminal
+        
+        # Switch Listening Speech Recognition Mode (Online Google STT vs Offline Vosk STT)
+        if "switch to online" in perintah or "online mode" in perintah or "use google speech" in perintah:
+            stt_mode = "online"
+            ngomong_langsung("Switched Red Neevera to online Google speech recognition mode.")
+            continue
+        elif "switch to offline" in perintah or "offline mode" in perintah or "use vosk" in perintah or "use offline speech" in perintah:
+            stt_mode = "offline"
+            ngomong_langsung("Switched Red Neevera to offline Vosk speech recognition mode.")
+            continue
+
+        # Deteksi pencarian berita/kejadian terkini di Indonesia untuk membuka portal berita nasional utama
+        if "what is happening in my country" in perintah or "what is happening" in perintah or "indonesia news" in perintah or "national news" in perintah:
+            webbrowser.open("https://news.detik.com/")
+            webbrowser.open("https://www.kompas.com/")
+            webbrowser.open("https://www.cnnindonesia.com/")
+            webbrowser.open("https://www.tempo.co/")
+            ngomong_langsung("Here is some information about what is currently happening based on the latest headlines from the top national news sites I've opened for you Neev. Please take a look at the windows on your screen to stay updated.")
+            continue
+
+        # Kirim ucapan pengguna langsung ke LLM
+        jawaban = tanya_llm(perintah)
+        
+        # Ekstrak COMMAND TAG dari Red Neevera LLM
+        cmd_match = re.search(r'\[CMD:\s*(.*?)\]', jawaban, re.IGNORECASE)
+        if cmd_match:
+            hasil_cmd = cmd_match.group(1).strip()
+            
+            # Timpa variabel perintah lalu biarkan jatuh (fall-through) ke logika rule-based di bawah
+            perintah = hasil_cmd.lower()
+            print(f"[Red Neevera intent matched System Action: {perintah}]")
+        else:
+            # Jika bukan perintah sistem, baru bicarakan sebagai jawaban natural LLM
+            ngomong_langsung(jawaban)
+            continue
+
+    # -------------------------------------------------------------
+    # JIKA MODE 'NEEVERA' AKTIF -> HANYA PROSES RULE-BASED SAJA
+    # -------------------------------------------------------------
     
     # LOGIKA MODE IDLE (TIDUR)
     
@@ -420,7 +510,14 @@ while True:
         play_recording("Alright, searching now.", "voice/Alright_Searching_Now.mp3")
         webbrowser.open("https://www.google.com/search?q=" + keyword)
     
-    
+    # Deteksi pencarian berita/kejadian terkini di Indonesia untuk membuka beberapa portal berita nasional sekaligus
+    elif "what is happening in my country" in perintah or "what is happening" in perintah or "indonesia news" in perintah or "national news" in perintah:
+        ngomong_langsung("Opening top Indonesian national news portals for the latest updates.")
+        webbrowser.open("https://news.detik.com/")
+        webbrowser.open("https://www.kompas.com/")
+        webbrowser.open("https://www.cnnindonesia.com/")
+        webbrowser.open("https://www.tempo.co/")
+        
     # PERINTAH WIFI 
     
     elif "turn on wifi" in perintah:
@@ -484,7 +581,7 @@ while True:
         text = random_voice.replace(".mp3", "").replace("_", " ").replace("voice/", "")
         play_recording(text, random_voice)
         
-    elif "who is your bos" in perintah or "who made you" in perintah or "who created you" in perintah or "who built you" in perintah:
+    elif "who is your bos" in perintah or "who made you" in perintah or "who created you" in perintah or "who built you" in perintah or "creator" in perintah or "hanif" in perintah or "neev" in perintah:
         play_recording("I was created by Neev, also known as Hanif. He is a very kind and cool person.", "voice/I was created by Neev, also known as Hanif. He is a very kind and cool person.mp3")
         
     
@@ -568,7 +665,7 @@ while True:
     
     elif "lock my computer" in perintah or "lock screen" in perintah:
         # Nanya dulu buat mastiin
-        play_recording("Are you sure you want to lock the computer?\n[System: say 'Yes lock my computer' or 'No/Cancel']\n", "voice/Are you sure you want to lock the computer.mp3")
+        play_recording("Are you sure you want to lock the computer?\n[System: say 'Yes lock my computer'/sure or 'No/Cancel']\n", "voice/Are you sure you want to lock the computer.mp3")
         
         # Buka telinga sebentar buat nungguin jawaban
         jawaban = dengar_vosk().lower()
@@ -596,7 +693,7 @@ while True:
         play_recording("Are you sure? I am entering standby mode to prevent accidental shutdown. Wake me up first to confirm.", "voice/Are you sure I am entering standby mode to prevent accidental shutdown. Wake me up first to confirm.mp3")
         continue # Langsung lempar ke atas biar masuk mode idle
     
-    # DEFAULT
+    # DEFAULT (JIKA MODE NEEVERA TIDAK MENGENALI PERINTAH)
     
     else:
-        play_recording("Sorry, I don't understand that command.", "voice/Sorry, I don't understand that command.mp3")
+        play_recording("Sorry, I don't understand that command. Say Red to switch to LLM mode.", "voice/Sorry, I don't understand that command.mp3")
