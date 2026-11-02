@@ -1,39 +1,102 @@
 # 🎙️ Neevera: Personal PC Voice Assistant (Jarvis-Style)
 
-Ever watched Iron Man and wished you had your own personal AI assistant like Jarvis? [cite_start]Meet **Neevera**! 
+Ever watched Iron Man and wished you had your own personal AI assistant like Jarvis? Meet **Neevera**!
 
-[cite_start]Neevera is an intelligent voice assistant built with Python, specifically designed to control your Windows PC or laptop using only voice commands[cite: 47, 52]. [cite_start]From opening applications and browsing the web to managing core system settings, Neevera makes your digital life hands-free and much cooler[cite: 46, 48].
-
----
-
-## ✨ Key Features
-
-[cite_start]Neevera is equipped with a wide range of skills to simplify your workflow: [cite: 46]
-
-* [cite_start]**🛠️ App & Window Management**: Open, close, or minimize applications like WhatsApp, Chrome, YouTube Music, and File Manager with a simple phrase. [cite: 47, 50]
-* **🧹 Workspace Cleanup ("Close Apps")**: Feeling overwhelmed by too many windows? [cite_start]Tell Neevera to close everything and instantly clear your desktop. 
-* **🌐 Automated Browsing**: Skip the typing. [cite_start]Ask Neevera to "Search on YouTube" or "Search on Google," and it will automatically handle the search in your browser. 
-* [cite_start]**💻 System & Utility Controls**: Toggle Wi-Fi, check battery levels, get the current time, take screenshots, or even lock your screen. [cite: 47, 48]
-* [cite_start]**🛑 Safe Shutdown**: When asked to power down the PC, Neevera enters a standby confirmation mode to prevent accidental shutdowns. [cite: 48, 52]
-* **😴 Idle/Sleep Mode**: When not in use, tell Neevera to "Go to sleep." [cite_start]It will stay quiet and only reactivate when it hears the "Wake up" command. 
+Neevera is an intelligent voice assistant built with Python, specifically designed to control your Windows PC or laptop using voice commands and local LLM intelligence. From opening applications and browsing the web to managing core system settings, Neevera makes your digital life hands-free, smart, and much cooler.
 
 ---
 
-## 🧠 Under the Hood
+## ✨ Fitur Utama (Key Features)
 
-[cite_start]Neevera's intelligence is powered by several robust Python libraries: [cite: 53]
-
-* **Vosk & SpeechRecognition**: Neevera's "ears." [cite_start]Vosk allows for offline command listening, while Google API is used for more complex online tasks. [cite: 53]
-* **Pygame & System.Speech**: Neevera's "voice." [cite_start]A blend of custom MP3 recordings and Windows Text-to-Speech provides a natural and responsive interaction. [cite: 53]
-* **OS, Psutil, & PyAutoGUI**: Neevera's "hands." [cite_start]These tools execute terminal scripts, monitor hardware status, and capture screen data. [cite: 53]
+Neevera dilengkapi dengan berbagai kapabilitas:
+- **Speech Recognition Offline & Online**: Menggunakan Vosk API untuk pengenalan suara offline yang cepat, akurat, dan hemat kuota, serta Google Speech Recognition untuk tugas online.
+- **Local Brain (LLM)**: Terintegrasi dengan Ollama (`llama3.2:3b`) sebagai otak lokal untuk interaksi percakapan dan intepretasi perintah cerdas.
+- **🛠️ App & Window Management**: Buka, tutup, atau minimize aplikasi seperti WhatsApp, Google Chrome, YouTube Music, dan File Manager dengan perintah suara.
+- **🧹 Workspace Cleanup**: Menutup aplikasi yang terbuka secara terorganisir untuk membersihkan layar kerja Anda.
+- **🌐 Automated Browsing**: Navigasi pencarian otomatis di YouTube, Google, atau TikTok tanpa perlu mengetik manual.
+- **💻 System & Utility Controls**: Kontrol Wi-Fi, pengaturan hotspot, cek status baterai, cek waktu saat ini, atur volume audio, hingga ambil screenshot layar.
+- **🛑 Safe Shutdown & Lock Screen**: Konfirmasi pintar sebelum mematikan atau mengunci laptop untuk menghindari kesalahan tindakan.
+- **😴 Idle/Sleep Mode**: Perintahkan Neevera untuk tidur ("Go to sleep") dan bangunkan kembali cukup dengan mengatakan "Wake up".
 
 ---
 
-## 🚀 Installation & Setup
+## 🧠 Arsitektur Teknologi
 
-Ready to bring this voice assistant to your own machine? Follow these steps:
+- **Vosk & SpeechRecognition**: Sebagai indera pendengaran (telinga) offline dan online.
+- **Ollama (`llama3.2:3b`)**: Otak lokal (LLM) untuk memahami konteks dan menjawab pertanyaan.
+- **Pygame & pyttsx3**: Sebagai suara (output vokal) gabungan audio respon dan text-to-speech.
+- **OS, Psutil, & PyAutoGUI**: Sebagai kontrol sistem Windows dan otomasi GUI.
 
-### 1. Install Dependencies
-Ensure Python is installed on your laptop. [cite_start]Open your terminal in the project directory and install the required libraries: 
+---
+
+## 📦 Prasyarat & Instalasi
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/Neevera/neevera-jarvis.git
+cd neevera-jarvis
+```
+
+### 2. Buat & Aktifkan Virtual Environment (Disarankan)
+```bash
+python -m venv venv
+# Di Windows:
+.\venv\Scripts\activate
+```
+
+### 3. Install Dependensi Python
 ```bash
 pip install -r requirements.txt
+```
+
+---
+
+## 📥 Setup Model Vosk (Speech Recognition)
+
+> [!IMPORTANT]
+> **Folder `model/` sengaja tidak disertakan di GitHub** karena ukurannya yang besar (>1.9 GB). Anda perlu mengunduh model speech recognition Vosk terlebih dahulu sebelum menjalankan asisten.
+
+1. Kunjungi halaman resmi model Vosk: [alphacephei.com/vosk/models](https://alphacephei.com/vosk/models)
+2. Unduh model bahasa Inggris universal yang Anda inginkan (misalnya: `vosk-model-en-us-0.22` atau `vosk-model-small-en-us-0.15`).
+3. Ekstrak file zip tersebut.
+4. Ubah nama folder hasil ekstraksi menjadi **`model`** dan letakkan langsung di root direktori project ini.
+
+Struktur folder harus terlihat seperti berikut:
+```text
+neevera-jarvis/
+├── model/                <-- Folder model diletakkan di sini
+│   ├── am/
+│   ├── conf/
+│   ├── graph/
+│   └── ivector/
+├── voice/                <-- File respon audio
+├── commands.txt
+├── neevera.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🧠 Setup Ollama (LLM)
+
+1. Pastikan Anda telah menginstal [Ollama](https://ollama.com/).
+2. Unduh model `llama3.2:3b`:
+   ```bash
+   ollama run llama3.2:3b
+   ```
+
+---
+
+## ▶️ Menjalankan Program
+
+Jalankan script utama:
+```bash
+python neevera.py
+```
+atau menggunakan shortcut batch:
+```bash
+neevera.bat
+```
+
+Katakan wake word atau instruksi untuk mulai berinteraksi dengan Neevera!

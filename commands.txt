@@ -1,35 +1,48 @@
 ====================================
-   DAFTAR PERINTAH NEEVERA
+   DAFTAR PERINTAH NEEVERA (BLUE & RED)
 ====================================
-== > Agent
+
+== > Dual Mode & Persona Control
+-. "switch to red" / "red" / "activate red" -> Berpindah ke Mode Red Neevera (Intelligent LLM Chatbot via Ollama)
+-. "switch to blue" / "blue" / "activate blue" -> Berpindah ke Mode Blue Neevera (Rule-Based Agent Cepat)
+-. "switch to online" / "online mode" -> Menggunakan Online Google SpeechRecognition (Mode Red)
+-. "switch to offline" / "offline mode" -> Menggunakan Offline Vosk Engine (Mode Red)
+
+== > Mode Red Neevera (LLM Features)
+-. "what is happening in my country" / "national news" -> Membuka 4 portal berita nasional utama Indonesia (Detik, Kompas, CNN, Tempo)
+-. "who created you" / "who is your boss" -> Mengenal pencipta (Neev / Hanif) dan saudaranya (Blue Neevera)
+-. Percakapan bebas dalam bahasa Inggris dengan kecerdasan Llama 3.2: 3B
+-. "exit" / "stop" -> Langsung keluar dari program/terminal secara bersih
+
+== > Mode Blue Neevera (Rule-Based Agent)
 -. "open (Nama Aplikasi)" -> Membuka Aplikasi
--. "close (Nama Aplikasi" -> Menutup Aplikasi
+-. "close (Nama Aplikasi)" -> Menutup Aplikasi
 -. "close apps" -> Menutup semua jendela (Sapu Jagat)
 -. "kill chrome / kill google chrome" -> Menutup browser dalam keadaan menyimpan tab sebelumnya
--. "minimize WhatsApp" -> minimize WhatsApp "-"
--. "minimize Chrome" -> minimize Chrome "-"
+-. "minimize WhatsApp" -> Minimize WhatsApp "-"
+-. "minimize Chrome" -> Minimize Chrome "-"
 -. "search on (Nama Aplikasi)" -> Mencari sesuatu di Youtube/TikTok/Google
--. "help" -> Menampilkan commands yang tersedia
+-. "help" -> Menampilkan daftar commands ini di Notepad
 -. "exit / stop" -> Mematikan Neevera
 -. "turn on WIFI / Turn off WIFI" -> Menyalakan dan mematikan WIFI
 -. "hotspot" -> Masuk ke menu hotspot
--. "screenshot / capture screen" -> Screenshot layar
+-. "screenshot / capture screen" -> Tangkap gambar layar
 -. "battery / check battery / battery status" -> Info baterai
--. "what time is it / check time" -> Info waktu
--. "what day is it / what day is today" -> Info hari ini
+-. "what time is it / check time" -> Info jam saat ini
+-. "what day is it / what day is today" -> Info hari saat ini
 -. "lock my computer / lock screen" -> Mengunci layar PC/Laptop
--. "shut down the computer / turn off the computer" -> Mematikan PC/Laptop (dilengkapi dengan konfirmasi keamanan)
--. "hide yourself / minimize yourself" -> Menyembunyikan neevera dari layar
--. "show yourself / come back" -> Memanggil neevera ke layer
+-. "shut down the computer / turn off the computer" -> Mematikan PC/Laptop (dilengkapi konfirmasi keamanan)
+-. "hide yourself / minimize yourself" -> Menyembunyikan Neevera dari layar
+-. "show yourself / come back" -> Memanggil Neevera ke layar
 -. "minimize apps / minimize everything" -> Minimize seluruh aplikasi yang sedang dibuka
 
-== > Identity
+== > Identity & Responses
 -. "who are you / hello, who are you"
--. "hey / hello / neevera / hey neevera" / hello neevera"
+-. "hey / hello / neevera / hey neevera / hello neevera"
 -. "what can you do" -> Menjelaskan kemampuan PA
--. "who made you / who created you / who is your bos / who built you" -> Memperkenalkan pencipta dari Neevera
+-. "who made you / who created you / who is your boss / who built you / hanif / neev" -> Memperkenalkan pencipta dari Neevera (Neev / Hanif)
 -. "how are you / are you good"
 
-== > Idle mode (Mode tidur)
--. "go to sleep / Standby / standby" -> Mode tidur (Tidak akan menerima perintah apapun)
--. "wake up" -> Membangunkan progam
+== > Idle Mode (Mode Tidur)
+-. "go to sleep / standby" -> Mode tidur (Tidak akan menerima perintah apapun)
+-. "wake up" -> Membangunkan program
